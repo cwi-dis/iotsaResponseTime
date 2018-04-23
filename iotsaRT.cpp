@@ -145,10 +145,10 @@ IotsaRTMod::handler() {
   message += "</select>";
 
   message += "Response signal: <select name='response'>";
-  message += "<option value='same'"; if (stimulus == resp_same) message += " selected";   message += ">Same</option>";
-  message += "<option value='reverse'"; if (stimulus == resp_reverse) message += " selected";   message += ">Reverse</option>";
-  message += "<option value='rise'"; if (stimulus == resp_rise) message += " selected";   message += ">Rise</option>";
-  message += "<option value='fall'"; if (stimulus == resp_fall) message += " selected";   message += ">Fall</option>";
+  message += "<option value='same'"; if (response == resp_same) message += " selected";   message += ">Same</option>";
+  message += "<option value='reverse'"; if (response == resp_reverse) message += " selected";   message += ">Reverse</option>";
+  message += "<option value='rise'"; if (response == resp_rise) message += " selected";   message += ">Rise</option>";
+  message += "<option value='fall'"; if (response == resp_fall) message += " selected";   message += ">Fall</option>";
   message += "</select>";
 
   message += "Stimulus reset time (ms): <input name='duration' type='number' value=" + String(duration) + ">";
@@ -201,6 +201,7 @@ bool IotsaRTMod::putHandler(const char *path, const JsonVariant& request, JsonOb
 }
 
 void IotsaRTMod::setup() {
+  IFDEBUG IotsaSerial.println("xxxjack iotsartmod setup");
   pinMode(outPin, OUTPUT);
   pinMode(inPin, INPUT_PULLUP);
   configLoad();

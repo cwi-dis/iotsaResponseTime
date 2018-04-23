@@ -8,7 +8,7 @@ typedef enum {resp_same, resp_reverse, resp_rise, resp_fall} responseType;
 
 class IotsaRTMod : public IotsaApiMod {
 public:
-  IotsaRTMod(IotsaApplication _app, int _outPin, int _inPin)
+  IotsaRTMod(IotsaApplication& _app, int _outPin, int _inPin)
   : IotsaApiMod(_app),
     outPin(_outPin),
     inPin(_inPin),

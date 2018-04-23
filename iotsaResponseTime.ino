@@ -20,10 +20,10 @@
 IotsaWebServer server(80);
 IotsaApplication application(server, "Iotsa Response time Server");
 IotsaWifiMod wifiMod(application);
+IotsaRTMod rtMod(application, OUTPUT_PIN, INPUT_PIN);
 IotsaOtaMod otaMod(application);
 IotsaLedMod ledMod(application, NEOPIXEL_PIN);
 
-IotsaRTMod rtMod(application, OUTPUT_PIN, INPUT_PIN);
 
 void setup(void){
   application.setup();
