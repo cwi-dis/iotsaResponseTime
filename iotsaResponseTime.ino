@@ -17,8 +17,7 @@
 #define OUTPUT_PIN 4
 #define INPUT_PIN 5
 
-IotsaWebServer server(80);
-IotsaApplication application(server, "Iotsa Response time Server");
+IotsaApplication application("Iotsa Response time Server");
 IotsaWifiMod wifiMod(application);
 IotsaRTMod rtMod(application, OUTPUT_PIN, INPUT_PIN);
 IotsaOtaMod otaMod(application);

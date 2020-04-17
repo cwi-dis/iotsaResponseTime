@@ -111,20 +111,20 @@ IotsaRTMod::handler() {
   stimulusType _stimulus = stimulus;
   responseType _response = response;
   int _duration = duration;
-  if (server.hasArg("stimulus")) {
-    _stimulus = str2stim(server.arg("stimulus").c_str());
+  if (server->hasArg("stimulus")) {
+    _stimulus = str2stim(server->arg("stimulus").c_str());
     anyChanged = true;
   }
-  if (server.hasArg("response")) {
-    _response = str2resp(server.arg("response").c_str());
+  if (server->hasArg("response")) {
+    _response = str2resp(server->arg("response").c_str());
     anyChanged = true;
   }
-  if (server.hasArg("duration")) {
-    _duration = server.arg("duration").toInt();
+  if (server->hasArg("duration")) {
+    _duration = server->arg("duration").toInt();
     anyChanged = true;
   }
   if (anyChanged && !iotsaConfig.inConfigurationMode()) {
-    server.send(401, "text/plain", "401 Unauthorized, not in configuration mode");
+    server->send(401, "text/plain", "401 Unauthorized, not in configuration mode");
     return;
   }
 
@@ -155,7 +155,7 @@ IotsaRTMod::handler() {
   
   message += "<input type='submit'></form>";
 
-  server.send(200, "text/html", message);
+  server->send(200, "text/html", message);
 }
 
 bool IotsaRTMod::getHandler(const char *path, JsonObject& reply) {
@@ -181,7 +181,7 @@ bool IotsaRTMod::getHandler(const char *path, JsonObject& reply) {
 
 bool IotsaRTMod::putHandler(const char *path, const JsonVariant& request, JsonObject& reply) {
   if (!iotsaConfig.inConfigurationMode()) return false;
-  JsonObject &args = request.as<JsonObject>();
+  JsonObject args = request.as<JsonObject>();
   bool anyDone = false;
   if (args.containsKey("stimulus")) {
     stimulus = str2stim(args["stimulus"].as<char *>());
@@ -208,7 +208,7 @@ void IotsaRTMod::setup() {
 }
 
 void IotsaRTMod::serverSetup() {
-  server.on("/rtconfig", std::bind(&IotsaRTMod::handler, this));
+  server->on("/rtconfig", std::bind(&IotsaRTMod::handler, this));
   api.setup("/api/rtconfig", true, true);
   api.setup("/api/stimulus", true);
   api.setup("/api/response", true);
