@@ -181,18 +181,18 @@ bool IotsaRTMod::getHandler(const char *path, JsonObject& reply) {
 
 bool IotsaRTMod::putHandler(const char *path, const JsonVariant& request, JsonObject& reply) {
   if (!iotsaConfig.inConfigurationMode()) return false;
-  JsonObject args = request.as<JsonObject>();
+  JsonObject reqObj = request.as<JsonObject>();
   bool anyDone = false;
-  if (args.containsKey("stimulus")) {
-    stimulus = str2stim(args["stimulus"].as<char *>());
+  const char *arg;
+  if (getFromRequest<const char *>(reqObj, "stimulus", arg)) {
+    stimulus = str2stim(arg);
     anyDone = true;
   }
-  if (args.containsKey("response")) {
-    stimulus = str2stim(args["response"].as<char *>());
+  if (getFromRequest<const char *>(reqObj, "response", arg)) {
+    response = str2resp(arg);
     anyDone = true;
   }
-  if (args.containsKey("duration")) {
-    duration = args["duration"].as<int>();
+  if (getFromRequest<int>(reqObj, "duration", duration)) {
     anyDone = true;
   }
 
