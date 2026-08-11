@@ -201,7 +201,6 @@ bool IotsaRTMod::putHandler(const char *path, const JsonVariant& request, JsonOb
 }
 
 void IotsaRTMod::setup() {
-  IFDEBUG IotsaSerial.println("xxxjack iotsartmod setup");
   pinMode(outPin, OUTPUT);
   pinMode(inPin, INPUT_PULLUP);
   configLoad();
@@ -212,6 +211,7 @@ void IotsaRTMod::serverSetup() {
   api.setup("/api/rtconfig", true, true);
   api.setup("/api/stimulus", true);
   api.setup("/api/response", true);
+  name = "rtconfig";
 }
 
 void IotsaRTMod::configLoad() {
