@@ -83,7 +83,7 @@ static const char *stim2str(stimulusType s) {
 }
 
 static const char *resp2str(responseType s) {
-  if ((unsigned int)s < 3) return respNames[(unsigned int)s];
+  if ((unsigned int)s < 4) return respNames[(unsigned int)s];
   return "";
 }
 
@@ -105,7 +105,8 @@ static responseType str2resp(const char *s) {
 // response time module
 //
 void
-IotsaRTMod::handler() {
+IotsaRTMod::webHandler() {
+  IotsaWebServer *server = api.webService->server;
   // First check configuration changes
   bool anyChanged = false;
   stimulusType _stimulus = stimulus;
@@ -206,11 +207,13 @@ void IotsaRTMod::setup() {
   configLoad();
 }
 
-void IotsaRTMod::serverSetup() {
-  server->on("/rtconfig", std::bind(&IotsaRTMod::handler, this));
-  api.setup("/api/rtconfig", true, true);
-  api.setup("/api/stimulus", true);
-  api.setup("/api/response", true);
+void IotsaRTMod::lateSetup() {
+  // "rtconfig" is the configuration surface (persisted, config-mode gated) and
+  // the single web page; "stimulus"/"response" are operational sub-endpoints
+  // (fire an edge / read the last measurement) with no page of their own.
+  api.setup("rtconfig", true, true);
+  api.setup("stimulus", true, false, false, false);
+  api.setup("response", true, false, false, false);
   name = "rtconfig";
 }
 

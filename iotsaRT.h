@@ -6,10 +6,10 @@
 typedef enum {stim_rise, stim_fall, stim_toggle} stimulusType;
 typedef enum {resp_same, resp_reverse, resp_rise, resp_fall} responseType;
 
-class IotsaRTMod : public IotsaApiMod {
+class IotsaRTMod : public IotsaModule {
 public:
   IotsaRTMod(IotsaApplication& _app, int _outPin, int _inPin)
-  : IotsaApiMod(_app),
+  : IotsaModule(_app),
     outPin(_outPin),
     inPin(_inPin),
     stimulus(stim_rise),
@@ -18,7 +18,7 @@ public:
     trigger(false)
   {}
   void setup() override;
-  void serverSetup() override;
+  void lateSetup() override;
   void loop() override;
   String info() override;
 protected:
@@ -26,7 +26,7 @@ protected:
   bool putHandler(const char *path, const JsonVariant& request, JsonObject& reply) override;
   void configLoad() override;
   void configSave() override;
-  void handler();
+  void webHandler() override;
   bool canDoStimulus();
   void doStimulus();
 

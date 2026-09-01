@@ -17,13 +17,13 @@ A stimulus is generated after a GET access to _/api/stimulus_. This call will fa
 
 Response time is read with GET access to _/api/response_. If no response has been received yet this returns an empty object. If a response has been received the time difference between stimulus and response is returned in `micros` (in microseconds). Because this value is only recorded in 32 bits a less precise measurement (in milliseconds) is also returned, in `millis`.
 
+Note that response detection is polled from the main loop, not interrupt-driven, so the practical resolution is milliseconds, not microseconds. That was fine for what this was built for (timing experiments on pneumatic logic). A microsecond-grade or statistics-gathering instrument would need a redesign.
+
 ## Software requirements
 
-* Arduino IDE, v1.6 or later.
-* The iotsa framework, download from <https://github.com/cwi-dis/iotsa>.
-
-Or you can build using PlatformIO.
+* PlatformIO (recommended). `pio run` builds every environment in `platformio.ini`.
+* Or the Arduino IDE, with the iotsa framework from <https://github.com/cwi-dis/iotsa>.
 
 ## Hardware requirements
 
-* a iotsa board. Alternatively you can use any other esp8266 board, but then you may have to adapt the GPIO pins used.
+* a iotsa board (ESP8266). Alternatively any other ESP8266 board, but then you may have to adapt the GPIO pins used.
