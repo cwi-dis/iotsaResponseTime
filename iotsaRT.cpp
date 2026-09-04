@@ -124,7 +124,7 @@ IotsaRTMod::webHandler() {
     _duration = server->arg("duration").toInt();
     anyChanged = true;
   }
-  if (anyChanged && !iotsaConfig.inConfigurationMode()) {
+  if (anyChanged && !iotsaController.inConfigurationMode()) {
     server->send(401, "text/plain", "401 Unauthorized, not in configuration mode");
     return;
   }
@@ -181,7 +181,7 @@ bool IotsaRTMod::getHandler(const char *path, JsonObject& reply) {
 }
 
 bool IotsaRTMod::putHandler(const char *path, const JsonVariant& request, JsonObject& reply) {
-  if (!iotsaConfig.inConfigurationMode()) return false;
+  if (!iotsaController.inConfigurationMode()) return false;
   JsonObject reqObj = request.as<JsonObject>();
   bool anyDone = false;
   const char *arg;
