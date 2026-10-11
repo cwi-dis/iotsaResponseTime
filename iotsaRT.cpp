@@ -180,7 +180,7 @@ bool IotsaRTMod::getHandler(const char *path, JsonObject& reply) {
   return true;
 }
 
-bool IotsaRTMod::putHandler(const char *path, const JsonVariant& request, JsonObject& reply) {
+bool IotsaRTMod::putHandler(const char *path, const JsonVariant& request, JsonObject& reply, bool *changed) {
   if (!iotsaController.inConfigurationMode()) return false;
   JsonObject reqObj = request.as<JsonObject>();
   bool anyDone = false;
@@ -198,7 +198,8 @@ bool IotsaRTMod::putHandler(const char *path, const JsonVariant& request, JsonOb
   }
 
   if (anyDone) configSave();
-  return anyDone;
+  if ((anyDone) && changed) *changed = true;
+  return true;
 }
 
 void IotsaRTMod::setup() {
