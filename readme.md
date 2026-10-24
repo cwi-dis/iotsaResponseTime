@@ -5,19 +5,31 @@ This is a wifi http server that allows triggering a digital signal, and measurin
 Home page is <https://github.com/cwi-dis/iotsaResponseTime>.
 This software is licensed under the [MIT license](LICENSE.txt) by the   CWI DIS group, <http://www.dis.cwi.nl>.
 
-As distributed the service sends a 3.3v trigger signal on GPIO 4. This signal can be configured as `"rise"` (low to high transition), `"fall"` (high to low transition) or `"toggle"` (inverting the output). It then measures the time it takes until the expected response state change is detected on GPIO5. This expected response can be `"rise"`, `"fall"`, `"same"` (same transition as output) or `"reverse"` (reverse transition as output).
+As distributed the service sends a 3.3v stimulus on GPIO 4 and measures the time until the expected response arrives on GPIO 5.
 
-Configuration is done manually at _/rtconfig_ or through the REST api at _/api/rtconfig_, which expects a JSON object with three fields:
+## Settings
 
-- `"stimulus"` one of the stimulus strings explained above,
-- `"response"` one of the response strings explained above,
-- `"duration"` duration in milliseconds after which the output is reset to the other state (mainly for rise or fall stimuli).
+The settings are on the web page _/rtconfig_ and in REST at _/api/rtconfig_:
 
-A stimulus is generated after a GET access to _/api/stimulus_. This call will fail for rise/fall stimuli for which the _duration_ has not run out yet.
+- `"stimulus"`: `"rise"` (low to high), `"fall"` (high to low) or `"toggle"` (inverting the output).
+- `"response"`: the edge expected on the input: `"rise"`, `"fall"`, `"same"` (the same edge as the stimulus) or `"reverse"` (the opposite edge).
+- `"duration"`: milliseconds after which a rise or fall goes back to its rest level (low for rise, high for fall). Toggle has no rest level.
+- `"timeout"`: milliseconds after which a measurement gives up, 0 to wait forever. The default is 10000.
 
-Response time is read with GET access to _/api/response_. If no response has been received yet this returns an empty object. If a response has been received the time difference between stimulus and response is returned in `micros` (in microseconds). Because this value is only recorded in 32 bits a less precise measurement (in milliseconds) is also returned, in `millis`.
+The device is a bench instrument: everything, settings included, is open to everyone on the network, and the settings need no configuration mode. They are saved.
 
-Note that response detection is polled from the main loop, not interrupt-driven, so the practical resolution is milliseconds, not microseconds. That was fine for what this was built for (timing experiments on pneumatic logic). A microsecond-grade or statistics-gathering instrument would need a redesign.
+## Measuring
+
+Each stimulus gets a number, `count`, counting from 1 since boot. A client compares the `count` of its stimulus with the one in the response, so it never mistakes an older measurement, or someone else's, for its own.
+
+- `PUT /api/stimulus` with `{"fire": true}` fires a stimulus and returns its `{"count": n}`. It is refused with 409 while the previous stimulus is still waiting for its response, or while the output is not at its rest level yet (the duration hasn't run out).
+- `PUT /api/stimulus` with `{"reset": true}` cancels a waiting measurement and puts the output at its rest level. It is always allowed. `{"reset": true, "fire": true}` does both, in that order.
+- `GET /api/stimulus` returns whether a stimulus can fire now (`ready`) and the output level (`output`).
+- `GET /api/response` returns the last measurement: its `count` (0: no stimulus yet), its `state` (`waiting`, `done`, `timeout` or `cancelled`), and the `stimulus`, `response`, `duration` and `timeout` it was measured with. When `done`, it has the response time in `millis`, and in `micros` when shorter than 71 minutes (where `micros()` wraps).
+
+The web page shows the last measurement and has Fire and Reset buttons.
+
+Note that response detection is polled from the main loop, not interrupt-driven, so the practical resolution is milliseconds, not microseconds. That was fine for what this was built for (timing experiments on pneumatic logic). A response that is already there when the stimulus fires counts as immediate.
 
 ## Software requirements
 
